@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="survey.js"></script>
+
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      #surveys_table tbody tr:hover td {
+        cursor: pointer;
+        background: #efefef;
+      }
+    </style>
+
+    <script type="text/javascript">
+      function option_rows(options) {
+        return options.map(function(option) {
+          return $('<li><strong>' + option.name + '</strong> (' + option.votes + ' votes)</li>');
+        });
+      }
+
+      function survey_row(survey) {
+        var row = $('<tr>');
+        row.append('<td>' + survey.id + '</td>');
+        row.append('<td>' + survey.question + '</td>');
+        var option_column = $('<td><ul>');
+        option_column.append(option_rows(survey.options));
+        row.append(option_column);
+
+        // Store row ID.
+        row.data('id', survey.id);
+        return row;
+      }
+
+      function load_surveys() {
+        Survey.fetch_surveys_with_votes(function(surveys) {
+          var rows = surveys.map(function(survey) {
+            return survey_row(survey)
+          });
+
+          render(rows);
+        });
+      }
+
+      function render(rows) {
+        $('#surveys_table tbody').html(rows);
+      }
+
+      // This happens when you click a survey.
+      $(document).on('click', '#surveys_table li', function(e) {
+        var survey_option_element = $(this);
+        var survey_option_text = survey_option_element.find('strong').text();
+        var survey_id = survey_option_element.parents('tr').data('id')
+
+        Survey.cast_vote(survey_id, survey_option_text, load_surveys);
+      });
+
+      // This happens when the page loads.
+      $(function() {
+        load_surveys();
+      });
+    </script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Survey Application</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <br><br>
+      <table id="surveys_table" class="table">
+        <thead>
+          <tr>
+            <th>Survey ID</th>
+            <th>Survey Question</th>
+            <th>Votes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <br><br>
+
+      <div id="survey_voting" class="hidden">
+
+      </div>
+    </div>
+  </body>
+</html>
