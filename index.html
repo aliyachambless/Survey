@@ -50,12 +50,11 @@
       }
 
       // This happens when you click a survey.
-      $(document).on('click', '#surveys_table li', function(e) {
-        var survey_option_element = $(this);
-        var survey_option_text = survey_option_element.find('strong').text();
-        var survey_id = survey_option_element.parents('tr').data('id')
-
-        Survey.cast_vote(survey_id, survey_option_text, load_surveys);
+      $(document).on('click', '#surveys_table tr', function(e)
+      {
+        var survey_element = $(this);
+        var survey_id = survey_element.data('id')
+        window.location.href='survey.html#survey_id='+survey_id
       });
 
       // This happens when the page loads.
@@ -69,7 +68,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Survey Application</a>
+          <a class="navbar-brand" href="index.html">Survey Application</a>
         </div>
       </div>
     </nav>

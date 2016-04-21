@@ -39,6 +39,11 @@
           // Get votes for survey
           var survey_votes = votes[survey.id];
 
+          // If there's no votes, don't bother.
+          if (!survey_votes) {
+            return survey;
+          }
+
           // Turn options into objects that have a `name` and `votes` properties.
           survey.options = survey.options.map(function(option) {
             return {

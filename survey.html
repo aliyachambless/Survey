@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="survey.js"></script>
+
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      #surveys_table tbody tr:hover td {
+        cursor: pointer;
+        background: #efefef;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var surveyID = window.location.hash.split("=")[1];
+
+      function load_surveys(votes_visible) {
+        Survey.fetch_surveys_with_votes(function(surveys) {
+          for(var i = 0; i < surveys.length; i++){
+            if(surveys[i].id == surveyID){
+              console.log(surveys[i]);
+              display_survey(surveys[i], votes_visible);
+            }
+          }
+        });
+      }
+
+      function display_survey(survey, votes_visible) {
+        var votes_class = 'hidden';
+        if (votes_visible) {
+          votes_class = '';
+        }
+
+        $("#survey h1").text(survey.question)
+        $("#survey ul").html("");
+        for(var i = 0; i < survey.options.length; i++){
+          $("#survey ul").append("<li><label><input type='radio' name='vote' value='" + survey.options[i].name + "'> " + survey.options[i].name+ "</label><span class='" + votes_class + "'> " + survey.options[i].votes + " votes </span></li>");
+        }
+      }
+      // This happens when the page loads.
+      $(function() {
+        load_surveys();
+
+        $("#survey button").on("click", function(){
+          var vote = $('input[name=vote]:checked', '#survey').val();
+          Survey.cast_vote(surveyID, vote, function(){
+            $("#survey button").remove();
+            $("#survey").append("<p>Thanks for your vote!</p>");
+            load_surveys(true);
+          });
+        })
+      });
+
+      //alert(window.location.hash.split("="))
+    </script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="index.html">Survey Application</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <br><br>
+
+      <div id="survey">
+          <h1></h1>
+          <ul>
+            
+          </ul>
+          <button>Vote</button>
+      </div>
+    </div>
+  </body>
+</html>
